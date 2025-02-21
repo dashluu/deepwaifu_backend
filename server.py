@@ -1,13 +1,14 @@
 from fastapi import FastAPI
-from fastapi.responses import FileResponse, StreamingResponse, Response
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.background import BackgroundTask
-from ollama import generate
-import asyncio
-import json
-from message import MessageModel
+from models import MessageModel, CharacterModel, ContextModel, AuthModel
+from context_manager import ContextManager
+import uuid
 
 app = FastAPI()
+MODEL = "llama3"
+# Managing chat history for each user
+ctx_manager = ContextManager()
 
 # Define origins for CORS
 origins = ["http://localhost", "http://localhost:3000"]
@@ -22,14 +23,30 @@ app.add_middleware(
 )
 
 
+# Frontend posts to localhost:port/new-chat
+# Input is an object of type CharacterModel
+# Output is a string
+@app.post("/new-chat", response_model=str)
+def new_chat_handler(character: CharacterModel):
+    # Create a unique id for each client, or each conversation
+    ctx_id = str(uuid.uuid4())
+    ctx = ContextModel(id=ctx_id, character=character)
+    ctx_manager.add_context(ctx)
+    return ctx_id
+
+
+# Frontend posts to localhost:port/auth
+# Input is an object of type AuthModel
+# Output is an object of type CharacterModel
+@app.post("/auth", response_model=CharacterModel)
+def new_chat_handler(auth: AuthModel):
+    # TODO: handle invalid context ID, or conversation ID
+    return ctx_manager.get_character(auth.ctx_id)
+
+
+# Frontend posts to localhost:port/chat
+# Input is an object of type MessageModel
+# Output is a string
 @app.post("/chat", response_model=str)
 async def chat_handler(message: MessageModel):
-    async def generate_response():
-        response = generate(model="llama3", prompt=message.text, stream=True)
-        for chunk in response:
-            if "response" in chunk:
-                yield chunk["response"]
-                # Force flush the chunk
-                await asyncio.sleep(0)
-
-    return StreamingResponse(generate_response())
+    return StreamingResponse(ctx_manager.generate_response(message))
