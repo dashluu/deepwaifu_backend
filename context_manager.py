@@ -1,12 +1,15 @@
-from models import MessageModel, ContextModel, CharacterModel
-import asyncio
-from ollama import chat
+from models import ContextModel
+from context import Context
+
+
+class ContextManagerError(Exception):
+    def __init__(self):
+        super().__init__("Invalid chat context.")
 
 
 class ContextManager:
-    def __init__(self, model="llama3"):
-        self._ctxs: dict[str, tuple[CharacterModel, list[dict[str, str]]]] = {}
-        self._model = model
+    def __init__(self):
+        self._ctxs: dict[str, Context] = {}
 
     def add_context(self, ctx: ContextModel):
         character = ctx.character
@@ -22,30 +25,17 @@ class ContextManager:
                 Your keywords are {character.keywords}.
             """,
         }
-        self._ctxs[ctx.id] = (character, [starter])
+        self._ctxs[ctx.id] = Context(character, starter)
 
-    def clear_context(self, ctx_id: str):
-        # Clears everything except for the first prompt to trigger role-playing
-        if ctx_id not in self._ctxs:
-            raise Exception("Invalid conversation.")
-        ctx = self._ctxs[ctx_id]
-        ctx[1] = [ctx[1][0]]
+    def get_context(self, id: str) -> Context:
+        if id not in self._ctxs:
+            raise ContextManagerError()
+        return self._ctxs[id]
 
-    # Gets the character associated with a context ID, or conversation ID
-    def get_character(self, ctx_id: str):
-        if ctx_id not in self._ctxs:
-            raise Exception("Invalid conversation.")
-        return self._ctxs[ctx_id][0]
+    def delete_context(self, id: str):
+        if id not in self._ctxs:
+            raise ContextManagerError()
+        del self._ctxs[id]
 
-    async def generate_response(self, message: MessageModel):
-        messages = self._ctxs[message.ctx_id][1]
-        messages.append({"role": "user", "content": message.text})
-        # Check history
-        # print(messages)
-        response = chat(model=self._model, messages=messages, stream=True)
-        messages.append({"role": "assistant", "content": ""})
-        for chunk in response:
-            messages[-1]["content"] += chunk["message"]["content"]
-            yield chunk["message"]["content"]
-            # Force flush the chunk
-            await asyncio.sleep(0)
+    def __str__(self):
+        return str(self._ctxs)

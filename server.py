@@ -3,12 +3,14 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from models import MessageModel, CharacterModel, ContextModel, AuthModel
 from context_manager import ContextManager
+from character_engine import CharacterEngine
 import uuid
 
 app = FastAPI()
 MODEL = "llama3"
 # Managing chat history for each user
 ctx_manager = ContextManager()
+char_engine = CharacterEngine(MODEL)
 
 # Define origins for CORS
 origins = ["http://localhost", "http://localhost:3000"]
@@ -35,13 +37,27 @@ def new_chat_handler(character: CharacterModel):
     return ctx_id
 
 
+# Frontend posts to localhost:port/delete-chat
+# Input is an object of type AuthModel
+# Output is a string
+@app.delete("/delete-chat", response_model=str)
+def delete_chat_handler(auth: AuthModel):
+    ctx_manager.delete_context(auth.ctx_id)
+    # Check whether the context is removed
+    # print(ctx_manager)
+    return auth.ctx_id
+
+
 # Frontend posts to localhost:port/auth
 # Input is an object of type AuthModel
 # Output is an object of type CharacterModel
 @app.post("/auth", response_model=CharacterModel)
 def new_chat_handler(auth: AuthModel):
     # TODO: handle invalid context ID, or conversation ID
-    return ctx_manager.get_character(auth.ctx_id)
+    ctx = ctx_manager.get_context(auth.ctx_id)
+    # Call this in case the context should be cleared when the user refreshes the page
+    ctx.clear_all()
+    return ctx.character
 
 
 # Frontend posts to localhost:port/chat
@@ -49,4 +65,6 @@ def new_chat_handler(auth: AuthModel):
 # Output is a string
 @app.post("/chat", response_model=str)
 async def chat_handler(message: MessageModel):
-    return StreamingResponse(ctx_manager.generate_response(message))
+    # TODO: handle invalid context ID, or conversation ID
+    ctx = ctx_manager.get_context(message.ctx_id)
+    return StreamingResponse(char_engine.generate_response(ctx, message))
