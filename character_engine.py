@@ -12,8 +12,22 @@ class CharacterEngine:
         ctx.messages.append({"role": "user", "content": message.text})
         # Check history
         # print(messages)
+        identity_prompt = {
+            "role": "system",
+            "content": f"""
+                You are roleplaying as {ctx.character.name}, a {ctx.character.age}-year-old {ctx.character.occupation}.
+                Your personality is: {ctx.character.personality}.
+                Your defining traits include: {ctx.character.keywords}.
+                Stay in character.
+                Do not acknowledge being an AI or respond in ways that contradict your persona.
+            """
+        }
+        if len(ctx.messages) % 5 == 0:
+            ctx.messages.append(identity_prompt)
+
         response = chat(model=self._model, messages=ctx.messages, stream=True)
         ctx.messages.append({"role": "assistant", "content": ""})
+        
         for chunk in response:
             ctx.messages[-1]["content"] += chunk["message"]["content"]
             yield chunk["message"]["content"]
