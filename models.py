@@ -15,6 +15,8 @@ class CharacterModel(BaseModel):
     personality: str
     age: int
     keywords: str
+    background: str
+    interests: str
 
 
 class ContextModel(BaseModel):

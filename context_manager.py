@@ -12,20 +12,7 @@ class ContextManager:
         self._ctxs: dict[str, Context] = {}
 
     def add_context(self, ctx: ContextModel):
-        character = ctx.character
-        # Initial prompt that "tricks" the model into role-playing
-        starter = {
-            "role": "system",
-            "content": f"""
-                This is a role playing.
-                Your name is {character.name}.
-                You are {character.age}.
-                Your occupation is {character.occupation}.
-                Your personality is {character.personality}.
-                Your keywords are {character.keywords}.
-            """,
-        }
-        self._ctxs[ctx.id] = Context(character, starter)
+        self._ctxs[ctx.id] = Context(ctx.character)
 
     def get_context(self, id: str) -> Context:
         if id not in self._ctxs:
