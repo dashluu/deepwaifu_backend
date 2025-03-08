@@ -1,13 +1,15 @@
 ### Uses FastAPI to run the backend
 
 To run the program:
+ 
+1. After pip installing everything, restart your VSCode so that it can detect ollama
+2. in terminal, ollama pull llama3
+3. fastapi dev server.py
 
-1. in terminal, pip install "fastapi[standard]"
-2. in terminal, pip install ollama
-3. Make sure to install ollama from https://ollama.com/download/windows
-4. Restart your VSCode so that it can detect ollama
-5. in terminal, ollama pull llama3
-5. fastapi dev server.py
+Dependencies: 
+1. pip install langchain faiss-cpu chromadb
+2. pip install "fastapi[standard]"
+3. pip install ollama
 
 To test if llama is running, 
 1. in terminal, ollama run llama3

@@ -1,5 +1,6 @@
 from context import Context # convo history -> from context.py
 from models import MessageModel # message from user -> from models.py
+from rag_retriever import RAGRetriever # rag retrieval model -> from rag_retriever.py
 import asyncio # asynch operations
 from ollama import chat # llama3 model
 
@@ -7,6 +8,7 @@ from ollama import chat # llama3 model
 class CharacterEngine:
     def __init__(self, model="llama3"):
         self._model = model
+        self.rag_retriever = RAGRetriever("data/dialogues.csv")
 
     # Asynchronous generator
     async def generate_response(self, ctx: Context, message: MessageModel):
@@ -14,8 +16,12 @@ class CharacterEngine:
 
         # if len(ctx.messages) % 5 == 0: # every 5 messages, injects identity (to reinforce persona)
         #     ctx.inject_identity()
-        
-        response = chat(model=self._model, messages=ctx.messages, stream=True) # calls model w/ history
+
+        retrieved_texts = self.rag_retriever.retrieve(message.text)
+        rag_context = "\n".join(retrieved_texts)
+        full_prompt = f"Context:\n{rag_context}\n\nUser: {message.text}\nAssistant:"
+
+        response = chat(model=self._model, messages=ctx.messages + [{"role": "system", "content": full_prompt}], stream=True) # calls model w/ history & RAG context
         ctx.add_message({"role": "assistant", "content": ""}) # placeholder for ai response
         
         for chunk in response:

@@ -12,7 +12,7 @@ MODEL = "llama3"
 ctx_manager = ContextManager()
 char_engine = CharacterEngine(MODEL)
 
-# Define origins for CORS
+# Define origins for CORS (frontend access)
 origins = ["http://localhost", "http://localhost:3000"]
 
 # Middleware
