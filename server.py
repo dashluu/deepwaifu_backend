@@ -1,16 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from models import MessageModel, CharacterModel, ContextModel, AuthModel
 from context_manager import ContextManager
-from character_engine import CharacterEngine
 import uuid
+from langchain.chains import ConversationalRetrievalChain
+from langchain.prompts import PromptTemplate
+from rag_retriever import RAGRetriever
 
 app = FastAPI()
 MODEL = "llama3"
 # Managing chat history for each user
 ctx_manager = ContextManager()
-char_engine = CharacterEngine(MODEL)
 
 # Define origins for CORS (frontend access)
 origins = ["http://localhost", "http://localhost:3000"]
@@ -24,10 +25,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Initialize RAGRetriever with your JSON data path
+retriever = RAGRetriever(json_path="data/dialogues.json")
 
-# Frontend posts to localhost:port/new-chat
-# Input is an object of type CharacterModel
-# Output is a string
+# Define a Conversational Retrieval Chain using LangChain
+prompt_template = PromptTemplate("You are a helpful assistant. Answer the following question: {question}")
+conversational_chain = ConversationalRetrievalChain(prompt_template, None, retriever.retrieve)
+
 @app.post("/new-chat", response_model=str)
 def new_chat_handler(character: CharacterModel):
     # Create a unique id for each client, or each conversation
@@ -36,35 +40,24 @@ def new_chat_handler(character: CharacterModel):
     ctx_manager.add_context(ctx)
     return ctx_id
 
-
-# Frontend posts to localhost:port/delete-chat
-# Input is an object of type AuthModel
-# Output is a string
 @app.delete("/delete-chat", response_model=str)
 def delete_chat_handler(auth: AuthModel):
     ctx_manager.delete_context(auth.ctx_id)
-    # Check whether the context is removed
-    # print(ctx_manager)
     return auth.ctx_id
 
-
-# Frontend posts to localhost:port/auth
-# Input is an object of type AuthModel
-# Output is an object of type CharacterModel
 @app.post("/auth", response_model=CharacterModel)
-def new_chat_handler(auth: AuthModel):
-    # TODO: handle invalid context ID, or conversation ID
+def auth_handler(auth: AuthModel):
     ctx = ctx_manager.get_context(auth.ctx_id)
-    # Call this in case the context should be cleared when the user refreshes the page
     ctx.clear_all()
     return ctx.character
 
-
-# Frontend posts to localhost:port/chat
-# Input is an object of type MessageModel
-# Output is a string
 @app.post("/chat", response_model=str)
 async def chat_handler(message: MessageModel):
-    # TODO: handle invalid context ID, or conversation ID
+    from character_engine import CharacterEngine  # Import inside the function to avoid circular import
+    char_engine = CharacterEngine(MODEL)
+    conversational_chain.generator = char_engine.generate_response  # Set the generator method
     ctx = ctx_manager.get_context(message.ctx_id)
-    return StreamingResponse(char_engine.generate_response(ctx, message))
+    if not ctx:
+        raise HTTPException(status_code=404, detail="Context not found")
+    response = conversational_chain.run({"question": message.content})
+    return StreamingResponse(response)

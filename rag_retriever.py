@@ -1,32 +1,12 @@
-from langchain.vectorstores import FAISS # vector database
-# from langchain_community.document_loaders import CSVLoader
-from langchain_openai import OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter # text splitter
+from langchain.vectorstores import FAISS
+from sentence_transformers import SentenceTransformer
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 import json
 from langchain.schema import Document
 
-#csv 
-#class RAGRetriever:
-    # def __init__(self, csv_path: str):
-    #     self.embeddings = OpenAIEmbeddings()
-    #     self.vectorstore = self._load_data(csv_path)
-
-    # def _load_data(self, csv_path):
-    #     loader = CSVLoader(csv_path)
-    #     documents = loader.load()
-    #     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-    #     split_docs = text_splitter.split_documents(documents)
-    #     return FAISS.from_documents(split_docs, self.embeddings)
-
-    # def retrieve(self, query: str, k=3):
-    #     results = self.vectorstore.similarity_search(query, k=k)
-    #     return [doc.page_content for doc in results]
-
-    
-#json
 class RAGRetriever:
     def __init__(self, json_path: str):
-        self.embeddings = OpenAIEmbeddings()
+        self.embeddings_model = SentenceTransformer('all-MiniLM-L6-v2')
         self.vectorstore = self._load_data(json_path)
 
     def _load_data(self, json_path):
@@ -51,9 +31,12 @@ class RAGRetriever:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         split_docs = text_splitter.split_documents(documents)
 
-        return FAISS.from_documents(split_docs, self.embeddings)
+        # Generate embeddings for the documents
+        texts = [doc.page_content for doc in split_docs]
+        embeddings = self.embeddings_model.encode(texts)
+        return FAISS.from_documents(split_docs, embeddings)
 
     def retrieve(self, query: str, k=3):
-        results = self.vectorstore.similarity_search(query, k=k)
+        query_embedding = self.embeddings_model.encode([query])
+        results = self.vectorstore.similarity_search(query_embedding, k=k)
         return [doc.page_content for doc in results]
-
