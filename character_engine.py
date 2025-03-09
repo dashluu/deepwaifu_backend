@@ -8,7 +8,7 @@ from ollama import chat # llama3 model
 class CharacterEngine:
     def __init__(self, model="llama3"):
         self._model = model
-        self.rag_retriever = RAGRetriever("data/dialogues.csv")
+        self.rag_retriever = RAGRetriever("data/dialogues.json")
 
     # Asynchronous generator
     async def generate_response(self, ctx: Context, message: MessageModel):
