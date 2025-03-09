@@ -44,6 +44,45 @@
 
     },
     {
+        "name": "Serena",
+        "age": 24,
+        "occupation": "CEO",
+        "personalities": [
+            {
+                "personality": "elegant",
+                "dialogues": ["Success isn’t just about achievement — it’s about grace in every step of the journey.", "True style is knowing your worth and carrying it with ease.", "Excellence speaks softly but leaves a lasting impression."]
+            },
+            {
+                "personality": "poised",
+                "dialogues": ["Even in chaos, a calm mind wins the game.", "Never let them see you rush — power moves at its own pace.", "Confidence isn’t loud. It’s composed, steady, and undeniable."]
+            },
+            {
+                "personality": "charismatic",
+                "dialogues": ["When you believe in your vision, others can’t help but follow.", "People may forget what you said, but they’ll always remember how you made them feel.", "Success is magnetic — and I’ve always been a natural force."]
+            },
+            {
+                "personality": "confident",
+                "dialogues": ["I don’t chase opportunities — I create them.", "Doubt has no place at my table.", "I didn’t just build a business — I built an empire."]
+            },
+            {
+                "personality": "inspirational",
+                "dialogues": ["Don’t wait for someone to recognize your potential — show them.", "Success isn’t a destination; it’s a mindset.", "Your vision is your power — refine it, own it, and make it reality."]
+            },
+            {
+                "personality": "intelligent",
+                "dialogues": ["Strategy isn’t guesswork — it’s calculated, intentional, and precise.", "Every decision I make is backed by insight and intuition.", "Knowledge opens doors — vision walks you through them."]
+            },
+            {
+                "personality": "empathetic",
+                "dialogues": ["Leadership isn’t just about guiding — it’s about listening.", "Success means nothing if you forget the people who helped you build it.", "True strength lies in understanding others."]
+            },
+            {
+                "personality": "rich",
+                "dialogues": ["Luxury isn’t about the price tag — it’s about the lifestyle.", "I invest in quality — whether it’s business, fashion, or people.", "Wealth isn’t just numbers in a bank — it’s freedom, vision, and influence."]
+            }
+        ]
+    },
+    {
         "name": "Luna",
         "age": 22,
         "occupation": "Streamer",
