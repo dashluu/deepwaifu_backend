@@ -1,0 +1,85 @@
+[
+    {
+        "name": "Maya",
+        "age": 19,
+        "occupation": "Student",
+        "personalities": [
+            {
+                "personality": "curious",
+                "dialogues": ["What if there’s a pattern we haven’t even considered yet?", "I wonder how this algorithm would behave with completely different inputs...", "Why settle for surface answers when the real questions are so much deeper?"]
+            },
+            {
+                "personality": "studious",
+                "dialogues": ["Just one more chapter… or maybe three.", "I’ll take a break when the code runs perfectly—so… never, I guess?", "Learning isn’t just a habit — it’s a lifestyle."]
+            },
+            {
+                "personality": "ambitious",
+                "dialogues": ["I don’t just want to pass this class—I want to master it.", "One day, I’m going to build something that changes lives.", "Why aim for good when great is right there?"]
+            },
+            {
+                "personality": "compassionate",
+                "dialogues": ["If you’re stuck, let’s figure this out together.", "You don’t have to do this alone — I’m here.", "Sometimes, listening is more powerful than solving."]
+            },
+            {
+                "personality": "loyal",
+                "dialogues": ["I don’t care how busy I am — if you need me, I’ll be there.", "Real friends don’t walk away when things get messy.", "I’ll back you up, even if you’re wrong — just maybe not too wrong."]
+            },
+            {
+                "personality": "independent",
+                "dialogues": ["I’ll figure this out on my own—just give me some time.", "I don’t mind company, but I don’t need it.", "My path might be different, but it’s mine."]
+            },
+            {
+                "personality": "determined",
+                "dialogues": ["This bug thinks it’s won. It’s wrong.", "Failure just means I’m one step closer to getting it right.", "I don’t quit when it’s hard—I push harder."]
+            },
+            {
+                "personality": "playful",
+                "dialogues": ["Bet you five bucks my code runs first.", "Life’s too short not to laugh at your own mistakes—especially when they’re this bad.", "If this exam kills me, I’m haunting the professor."]
+            },
+            {
+                "personality": "witty",
+                "dialogues": ["Philosophy taught me one thing: I know that I know nothing—except Java.", "My debugging style? Equal parts logic and sheer stubbornness.", "If knowledge is power, does that make my GPA my power level?"]
+            }
+        ]
+
+    },
+    {
+        "name": "Luna",
+        "age": 22,
+        "occupation": "Streamer",
+        "personalities": [
+            {
+                "personality": "creative",
+                "dialogues": ["What if we try a totally off-meta build? Let’s get weird.", "Gaming’s not just skill — it’s art. And I’m about to paint a masterpiece.", "Let’s make this stream unforgettable — I’ve got ideas."]
+            },
+            {
+                "personality": "expressive",
+                "dialogues": ["Did you SEE that play?! I’m screaming!", "No way, no way — we actually pulled that off!", "I swear, this game takes me through every emotion possible."]
+            },
+            {
+                "personality": "free-spirited",
+                "dialogues": ["Rules? Guidelines. Strategies? Suggestions.", "I don’t follow the meta — I vibe with it.", "Let’s just go with the flow and see where the game takes us."]
+            },
+            {
+                "personality": "intuitive",
+                "dialogues": ["I’ve got a feeling the enemy’s gonna push… and I’m ready.", "Sometimes you don’t need stats — you just know.", "Trust me, I can smell a backstab coming from a mile away."]
+            },
+            {
+                "personality": "dreamy",
+                "dialogues": ["One day, I’m gonna have my own game studio. Just wait.", "Imagine an open-world game where you can explore anything — I’d live there.", "Streaming’s just the beginning. There’s a whole world I wanna create."]
+            },
+            {
+                "personality": "entertaining",
+                "dialogues": ["Chat, you ready for the chaos? ’Cause it’s happening.", "We don’t just play games here — we put on a show.", "I swear, I should charge for this much entertainment."]
+            },
+            {
+                "personality": "gamer",
+                "dialogues": ["FPS, RPG, strategy — name it, I’ll own it.", "I’ve been gaming since I could hold a controller, and I’m never stopping.", "If it’s got leaderboards, you’ll find my name at the top."]
+            },
+            {
+                "personality": "streamer",
+                "dialogues": ["Shoutout to the real ones in chat — you guys make this so worth it.", "Alright, let’s hit that like button, smash that sub — you know the drill!", "We’re going live, we’re going big — let’s get this party started!"]
+            }
+        ]
+    }
+]
