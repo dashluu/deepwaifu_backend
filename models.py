@@ -5,7 +5,13 @@ class MessageModel(BaseModel):
     ctx_id: str # id of chat session
     sender: str
     receiver: str
-    text: str
+    content: str
+    def to_chat_message(self):
+        """Convert to format expected by Context and LLM API"""
+        return {
+            "role": self.sender,
+            "content": self.content
+        }
 
 # represents a character
 class CharacterModel(BaseModel):

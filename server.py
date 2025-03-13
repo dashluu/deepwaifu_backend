@@ -4,9 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from models import MessageModel, CharacterModel, ContextModel, AuthModel
 from context_manager import ContextManager
 import uuid
-from langchain.chains import ConversationalRetrievalChain
-from langchain.prompts import PromptTemplate
-from rag_retriever import RAGRetriever
+import asyncio
 
 app = FastAPI()
 MODEL = "llama3"
@@ -24,13 +22,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Initialize RAGRetriever with your JSON data path
-retriever = RAGRetriever(json_path="data/dialogues.json")
-
-# Define a Conversational Retrieval Chain using LangChain
-prompt_template = PromptTemplate("You are a helpful assistant. Answer the following question: {question}")
-conversational_chain = ConversationalRetrievalChain(prompt_template, None, retriever.retrieve)
 
 @app.post("/new-chat", response_model=str)
 def new_chat_handler(character: CharacterModel):
@@ -51,13 +42,35 @@ def auth_handler(auth: AuthModel):
     ctx.clear_all()
     return ctx.character
 
-@app.post("/chat", response_model=str)
+@app.post("/chat")
 async def chat_handler(message: MessageModel):
     from character_engine import CharacterEngine  # Import inside the function to avoid circular import
-    char_engine = CharacterEngine(MODEL)
-    conversational_chain.generator = char_engine.generate_response  # Set the generator method
+    
     ctx = ctx_manager.get_context(message.ctx_id)
     if not ctx:
         raise HTTPException(status_code=404, detail="Context not found")
-    response = conversational_chain.run({"question": message.content})
-    return StreamingResponse(response)
+    
+    char_engine = CharacterEngine(MODEL)
+    
+    # Create the streaming response
+    async def response_generator():
+        try:
+            async for chunk in char_engine.generate_response(ctx, message):
+                # Make sure we're yielding valid content
+                if chunk:
+                    # Add proper formatting for SSE
+                    yield f"data: {chunk}\n\n"
+                await asyncio.sleep(0.01)  # Small delay to avoid overwhelming the connection
+            
+            # Signal the end of the stream
+            yield "data: [DONE]\n\n"
+            
+        except Exception as e:
+            print(f"Error in response generator: {str(e)}")
+            yield f"data: Error: {str(e)}\n\n"
+    
+    return StreamingResponse(
+        response_generator(), 
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive"}
+    )
