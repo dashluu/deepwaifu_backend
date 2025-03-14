@@ -1,11 +1,11 @@
 ### Uses FastAPI to run the backend
 Installation
 1. clone the repository 
-git clone https://github.com/yourusername/deepwaifu_backend.git
-cd deepwaifu_backend
+    - git clone https://github.com/yourusername/deepwaifu_backend.git
+    - cd deepwaifu_backend
 2. create and activate a virtual environment: 
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+    - python -m venv venv
+    - source venv/bin/activate  # On Windows: venv\Scripts\activate
 3. Install dependencies:
 
 Dependencies: 
