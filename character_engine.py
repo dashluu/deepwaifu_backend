@@ -14,13 +14,14 @@ class CharacterEngine:
         # Add user's message to conversation history
         ctx.add_message(message.to_chat_message())
         # Retrieve relevant context using RAG
-        retrieved_texts = self.rag_retriever.retrieve(message.content)
+        retrieved_texts = self.rag_retriever.retrieve(message.content, k=2)
         rag_context = "\n".join(retrieved_texts)
         
         # Create system message with RAG context
         system_message = {"role": "system", "content": f"Context:\n{rag_context}\n\nRespond to the user based on this context."}
         
         # Add system message to the beginning of messages list for this request only
+        recent_messages = ctx.messages[-5:] 
         messages_with_context = [system_message] + ctx.messages
         
         # Call the model with history & RAG context

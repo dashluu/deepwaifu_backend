@@ -60,9 +60,7 @@ async def chat_handler(message: MessageModel):
                 if chunk:
                     # Add proper formatting for SSE
                     yield f"data: {chunk}\n\n"
-                await asyncio.sleep(0.01)  # Small delay to avoid overwhelming the connection
-            
-            # Signal the end of the stream
+            # end marker
             yield "data: [DONE]\n\n"
             
         except Exception as e:
@@ -72,5 +70,8 @@ async def chat_handler(message: MessageModel):
     return StreamingResponse(
         response_generator(), 
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "Connection": "keep-alive"}
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive"
+            }
     )

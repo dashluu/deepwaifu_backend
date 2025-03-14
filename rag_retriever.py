@@ -82,7 +82,6 @@ class RAGRetriever:
     def retrieve(self, query: str, k=3):
         try:
             print(f"Retrieving relevant context for: {query}")
-        
             # The simplest solution: just pass the query directly
             # FAISS will use the embeddings object we provided during initialization
             results = self.vectorstore.similarity_search(query, k=k)
