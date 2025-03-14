@@ -23,12 +23,12 @@ Running the Backend:
 5. fastapi dev server.py
 
 Testing
-To test if llama is running:
-$ ollama run llama3 # This will check if your model is running (ctrl+d to exit)
-To test the retriever:
-$ python test_retriever.py
-To test the chat functionality:
-$ python test_chat.py
+- To test if llama is running:
+    - $ ollama run llama3 # This will check if your model is running (ctrl+d to exit)
+- To test the retriever:
+    - $ python test_retriever.py
+- To test the chat functionality:
+    - $ python test_chat.py
 
 API Endpoints
 
