@@ -13,8 +13,13 @@ class CharacterEngine:
     async def generate_response(self, ctx: Context, message: MessageModel):
         # Add user's message to conversation history
         ctx.add_message(message.to_chat_message())
+        # Add character identity to improve retrieval
+        character_info = f"Character: {ctx.character.name}, a {ctx.character.age}-year-old {ctx.character.occupation} who is {ctx.character.personality}."
+    
+        # Enhanced query with character context
+        enhanced_query = f"As {character_info} {message.content}"
         # Retrieve relevant context using RAG
-        retrieved_texts = self.rag_retriever.retrieve(message.content, k=2)
+        retrieved_texts = self.rag_retriever.retrieve(enhanced_query, k=2)
         rag_context = "\n".join(retrieved_texts)
         
         # Create system message with RAG context
