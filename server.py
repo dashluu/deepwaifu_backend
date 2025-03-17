@@ -23,6 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.post("/new-chat", response_model=str)
 def new_chat_handler(character: CharacterModel):
     # Create a unique id for each client, or each conversation
@@ -31,10 +32,12 @@ def new_chat_handler(character: CharacterModel):
     ctx_manager.add_context(ctx)
     return ctx_id
 
+
 @app.delete("/delete-chat", response_model=str)
 def delete_chat_handler(auth: AuthModel):
     ctx_manager.delete_context(auth.ctx_id)
     return auth.ctx_id
+
 
 @app.post("/auth", response_model=CharacterModel)
 def auth_handler(auth: AuthModel):
@@ -42,16 +45,18 @@ def auth_handler(auth: AuthModel):
     ctx.clear_all()
     return ctx.character
 
-@app.post("/chat")
+
+@app.post("/text-chat")
 async def chat_handler(message: MessageModel):
+    print(message)
     from character_engine import CharacterEngine  # Import inside the function to avoid circular import
-    
+
     ctx = ctx_manager.get_context(message.ctx_id)
     if not ctx:
         raise HTTPException(status_code=404, detail="Context not found")
-    
+
     char_engine = CharacterEngine(MODEL)
-    
+
     # Create the streaming response
     async def response_generator():
         try:
@@ -62,16 +67,13 @@ async def chat_handler(message: MessageModel):
                     yield f"data: {chunk}\n\n"
             # end marker
             yield "data: [DONE]\n\n"
-            
+
         except Exception as e:
             print(f"Error in response generator: {str(e)}")
             yield f"data: Error: {str(e)}\n\n"
-    
+
     return StreamingResponse(
-        response_generator(), 
+        response_generator(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive"
-            }
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
     )
