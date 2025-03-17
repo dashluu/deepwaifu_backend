@@ -46,7 +46,7 @@ def auth_handler(auth: AuthModel):
     return ctx.character
 
 
-@app.post("/text-chat")
+@app.post("/chat")
 async def chat_handler(message: MessageModel):
     print(message)
     from character_engine import CharacterEngine  # Import inside the function to avoid circular import
